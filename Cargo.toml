@@ -1,0 +1,22 @@
+[package]
+name = "openvr-texture-problem"
+version = "0.0.1"
+authors = ["Mate Kovacs <mkovaxx@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+cgmath = "0.14.1"
+glium = "0.25.1"
+openvr = "0.6.0"
+
+# The development profile, used for `cargo build`.
+[profile.dev]
+opt-level = 0      # controls the `--opt-level` the compiler builds with
+debug = true       # controls whether the compiler passes `-C debuginfo`
+                   # a value of `true` is equivalent to `2`
+rpath = false      # controls whether the compiler passes `-C rpath`
+lto = false        # controls `-C lto` for binaries and staticlibs
+debug-assertions = true # controls whether debug assertions are enabled
+codegen-units = 1  # controls whether the compiler passes `-C codegen-units`
+                   # `codegen-units` is ignored when `lto = true`
+panic = 'unwind'   # panic strategy (`-C panic=...`), can also be 'abort'
