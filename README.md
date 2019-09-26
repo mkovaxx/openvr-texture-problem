@@ -23,4 +23,14 @@ As soon as frames are submitted, the red-blue checker pattern texture seems to b
 In subsequent frames, the main window looks like this:
 
 ![Screenshot of Incorrect Frame](/screenshots/incorrect.png?raw=true "Incorrect Frame")
- 
+
+## Details
+
+- Rust toolchain version: 1.33.0
+- `openvr` version: 0.6.0
+- `glium` version: 0.25.1
+- OpenGL version: 3.1.0 NVIDIA 431.53
+- OpenGL vendor: NVIDIA Corporation
+- OpenGL renderer: GeForce GTX 1060/PCIe/SSE2
+- OS: Windows 10
+- Headset: Oculus Rift
