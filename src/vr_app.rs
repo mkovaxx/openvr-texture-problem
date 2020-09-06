@@ -18,7 +18,7 @@ impl VrApp {
         let window_builder = glium::glutin::window::WindowBuilder::new()
             .with_inner_size(glium::glutin::dpi::LogicalSize::new(256.0, 256.0));
         let context = glium::glutin::ContextBuilder::new()
-            .with_gl(GlRequest::Specific(glium::glutin::Api::OpenGl, (3, 1)))
+            .with_gl(GlRequest::Specific(glium::glutin::Api::OpenGl, (3, 2)))
             .with_gl_profile(glium::glutin::GlProfile::Core)
             .with_gl_robustness(glium::glutin::Robustness::RobustLoseContextOnReset)
             .build_windowed(window_builder, &event_loop)
