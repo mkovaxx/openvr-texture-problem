@@ -14,11 +14,9 @@ So the main window looks like this:
 
 ## Symptom of the Problem
 
-Now let's uncomment the block that submits frames to OpenVR:
+To enable submitting frames to OpenVR, click anywhere on the window.
 
-https://github.com/mkovacs/openvr-texture-problem/blob/master/src/vr_app.rs#L87-L93
-
-As soon as frames are submitted, the red-blue checker pattern texture seems to be corrupted somehow.
+As soon as frames are submitted, the red-blue checker pattern texture becomes invalid in some way.
 
 In subsequent frames, the main window looks like this:
 
@@ -26,11 +24,11 @@ In subsequent frames, the main window looks like this:
 
 ## Details
 
-- Rust toolchain version: 1.33.0
+- Rust toolchain version: 1.46.0
 - `openvr` version: 0.6.0
-- `glium` version: 0.25.1
-- OpenGL version: 3.1.0 NVIDIA 431.53
+- `glium` version: 0.27.0
 - OpenGL vendor: NVIDIA Corporation
-- OpenGL renderer: GeForce GTX 1060/PCIe/SSE2
+- OpenGL renderer: GeForce GTX 1070 Ti/PCIe/SSE2
+- OpenGL version: 3.1.0 NVIDIA 432.00
 - OS: Windows 10
 - Headset: Oculus Rift
