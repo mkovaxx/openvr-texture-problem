@@ -6,7 +6,6 @@ use openvr;
 use std::rc::Rc;
 
 pub struct VrApp {
-    event_loop: glium::glutin::EventsLoop,
     display: Rc<glium::Display>,
     left_eye: VrEye,
     right_eye: VrEye,
@@ -15,11 +14,9 @@ pub struct VrApp {
 }
 
 impl VrApp {
-    pub fn new() -> VrApp {
-        let event_loop = glium::glutin::EventsLoop::new();
-
-        let window_builder = glium::glutin::WindowBuilder::new()
-            .with_dimensions(glium::glutin::dpi::LogicalSize::new(256.0, 256.0));
+    pub fn new(event_loop: &glium::glutin::event_loop::EventLoop<()>) -> VrApp {
+        let window_builder = glium::glutin::window::WindowBuilder::new()
+            .with_inner_size(glium::glutin::dpi::LogicalSize::new(256.0, 256.0));
         let context = glium::glutin::ContextBuilder::new()
             .with_gl(GlRequest::Specific(glium::glutin::Api::OpenGl, (3, 1)))
             .with_gl_profile(glium::glutin::GlProfile::Core)
@@ -62,7 +59,6 @@ impl VrApp {
         let renderer = renderer::Renderer::new(&display);
 
         VrApp {
-            event_loop: event_loop,
             display: display,
             left_eye: left_eye,
             right_eye: right_eye,
@@ -71,10 +67,11 @@ impl VrApp {
         }
     }
 
-    pub fn run(&mut self) {
-        let mut running = true;
+    pub fn run(self, event_loop: glium::glutin::event_loop::EventLoop<()>) {
+        let mut is_submit_enabled = false;
 
-        while running {
+        event_loop.run(move |glutin_event, _target, control_flow| {
+            *control_flow = glium::glutin::event_loop::ControlFlow::Poll;
             self.vr_device
                 .compositor
                 .wait_get_poses()
@@ -84,36 +81,40 @@ impl VrApp {
             self.renderer.render_test(&mut buffer);
             buffer.finish().unwrap();
 
-            // if this block is executed, the texture will read all black in the shader
-            /*
-            unsafe {
-                self.left_eye.submit(&self.vr_device.compositor, openvr::Eye::Left);
-                self.right_eye.submit(&self.vr_device.compositor, openvr::Eye::Right);
+            if is_submit_enabled {
+                // if this block is executed, the texture will read all black in the shader
+                unsafe {
+                    self.left_eye.submit(&self.vr_device.compositor, openvr::Eye::Left);
+                    self.right_eye.submit(&self.vr_device.compositor, openvr::Eye::Right);
+                }
             }
-            */
 
-            self.event_loop.poll_events(|event| match event {
-                glium::glutin::Event::WindowEvent { event, .. } => match event {
-                    glium::glutin::WindowEvent::CloseRequested => running = false,
-                    _ => (),
+            match glutin_event {
+                glium::glutin::event::Event::WindowEvent { event, .. } => match event {
+                    glium::glutin::event::WindowEvent::CloseRequested => {
+                        *control_flow = glium::glutin::event_loop::ControlFlow::Exit;
+                    },
+                    glium::glutin::event::WindowEvent::MouseInput {..} => {
+                        is_submit_enabled = true;
+                    },
+                    _ => {},
                 },
-                _ => (),
-            });
-        }
+                _ => {},
+            }
+        });
     }
 }
 
 struct VrDevice {
     // NOTE(mkovacs): The context must be kept around, otherwise other fields become invalid.
+    #[allow(dead_code)]
     context: openvr::Context,
     system: openvr::System,
     compositor: openvr::Compositor,
 }
 
 struct VrEye {
-    display: Rc<glium::Display>,
     color: glium::Texture2d,
-    depth: glium::framebuffer::DepthRenderBuffer,
 }
 
 impl VrEye {
@@ -127,18 +128,8 @@ impl VrEye {
         )
         .unwrap();
 
-        let depth = glium::framebuffer::DepthRenderBuffer::new(
-            display.as_ref(),
-            glium::texture::DepthFormat::I24,
-            size.0,
-            size.1,
-        )
-        .unwrap();
-
         VrEye {
-            display: display.clone(),
             color: color,
-            depth: depth,
         }
     }
 
